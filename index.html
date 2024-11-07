@@ -40,8 +40,98 @@
 
     <!-- CSS Just for demo purpose, don't include it in your project -->
     <link rel="stylesheet" href="assets/css/demo.css" />
+
+
+    <meta http-equiv="cache-control" content="no-cache">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0">
+    <meta name="ikol-domain-verification" content="d46a649ad7081ba3ac45a9f8f55c0a49">
   </head>
   <body>
+    <script id="error-page" type="text/template">
+      <style>
+          body,html{padding:0;margin:0;width:100%;height:100%;font-family:"Open Sans",sans-serif;letter-spacing:0;font-weight:600;font-size:13px}.h1,h1{font-size:36px}.h1,.h2,.h3,h1,h2,h3{margin-top:20px;margin-bottom:10px;font-weight:400;line-height:1.1;color:inherit}*{-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box}.container{width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:0 15px;text-align:center}.row{flex:0 1 auto;min-width:0}.logo{width:80px}.caption{opacity:.5}
+      </style>
+      <div class="container">
+          <div class="row">
+              <img class="logo" width="80" src="https://res.stikol.com/logos/ikol_logo_t_160.png" alt="Logo"/>
+          </div>
+          <div class="row">
+              <h1 id="error-title"></h1>
+          </div>
+          <div class="row caption" id="error-secondary-text"></div>
+      </div>
+  </script>
+  
+  <script>
+      (function () {
+          const params = new FormData();
+  
+          params.append('output', 'json');
+          params.append('code', 'Y1OsCB9bLyEa415hjJoTtpJ17JBbWP');
+          params.append('location', window.location.href);
+  
+          const options = {
+              method: 'POST',
+              body: params
+          };
+  
+          fetch('https://api.ikol.com/iiaGetPortalHtml', options)
+              .then(function (response) { return response.json(); })
+              .then(function (response) {
+                  if (response.result === 0) {
+                      document.open();
+                      document.write(response.data.html);
+                      document.close();
+                  } else {
+                      onError(response);
+                  }
+              })
+              .catch(function () {
+                  onError({result: -1});
+                  setTimeout(function () { window.location.reload(); }, 10 * 1000);
+              });
+  
+          function onError(error) {
+              const code = error.result || 0;
+              const message = {};
+  
+              switch (code) {
+                  case 101:
+                      message.secondary = 'Invalid page identifier';
+                      break;
+                  case 102:
+                      message.secondary = 'Customer does not exist';
+                      break;
+                  case 103:
+                      message.secondary = 'Invalid page location';
+                      break;
+                  case 104:
+                      message.secondary = 'You have to verify this domain in IKOL Business app for this page to work';
+                      break;
+                  default:
+                      message.secondary = 'Please try refreshing the page...';
+              }
+  
+              message.title = 'Something went wrong';
+  
+              displayErrors(message);
+          }
+  
+          function displayErrors(message) {
+              const template = document.getElementById('error-page');
+  
+              document.write(template.innerHTML);
+  
+              const title = document.querySelector('#error-title');
+              const secondary = document.querySelector('#error-secondary-text');
+  
+              title.innerText = message.title;
+              secondary.innerHTML = message.secondary;
+          }
+      })();
+  </script>
+ <!-------->
     <div class="wrapper">
       <!-- Sidebar -->
       <div class="sidebar" data-background-color="dark">
